@@ -1,5 +1,7 @@
-import { Container, useColorModeValue,VStack, Box, Heading, Button} from '@chakra-ui/react';
+import { useProductStore } from "../store/product.jsx";
+import { Container, useColorModeValue,VStack, Box, Heading, Button, Input} from '@chakra-ui/react';
 import React , { useState }from 'react';
+
 
 const CreatePage = () => {
   const [newProduct, setNewProduct] = useState({
@@ -8,10 +10,22 @@ const CreatePage = () => {
     image: "",
   });
 
-  const handleAddProduct = ()=> {
-    console.log(newProduct);
-  };
+  const { createProduct } = useProductStore();
 
+  const handleAddProduct = async() => {
+
+    const {success, message} = await createProduct(newProduct);
+
+    console.log("Success:", success);
+    console.log("Message:", message);
+
+    if (success) {
+      setNewProduct({ name: "", price:"", image: ""});
+    }else {
+      alert(message);
+    }
+
+  };
 
   return (
     <Container maxW = {"container.sm"}>
@@ -25,20 +39,20 @@ const CreatePage = () => {
         p= {6} rounded= {"lg"} shadow= {"md"}
         >
           <VStack spacing= {4}>
-            <input 
+            <Input 
             placeholder="Product Name" 
             name= "name"
             value= {newProduct.name}
             onChange= {(e) => setNewProduct ({...newProduct, name: e.target.value})}
             />
-            <input 
+            <Input 
             placeholder="Price" 
             name= "price"
-            type= "nymber"
+            type= "number"
             value= {newProduct.price}
-            onChange= {(e) => setNewProduct ({...newProduct, price: e.target.value})}
+            onChange= {(e) => setNewProduct ({...newProduct, price: Number(e.target.value)})}
             />
-            <input 
+            <Input 
             placeholder="Image URL" 
             name= "image"
             value= {newProduct.image}
@@ -49,14 +63,10 @@ const CreatePage = () => {
               Add Product
             </Button>
           </VStack>
-
-
-
-
         </Box>
       </VStack>
       </Container>
-  )
+  );
 };
 
-export default CreatePage
+export default CreatePage;
