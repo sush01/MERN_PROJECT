@@ -1,4 +1,6 @@
 import Product from "../models/product.model.js";
+import mongoose from 'mongoose';
+
 
 export const getProducts = async (req, res) => {
   try{
@@ -52,7 +54,10 @@ export const deleteProduct = async (req, res) =>{
     }
     
     try{
-      await Product.findByIdAndDelete(id);
+      const result = await Product.findByIdAndDelete(id);
+      if (!result){
+        return res.status(404).json({message: "Product not found"})
+      }
       res.status(200).json({sucess: true, message: "Product successfully deleted" });
     } catch (error){
       console.log("error in deleting product:", error.message);
